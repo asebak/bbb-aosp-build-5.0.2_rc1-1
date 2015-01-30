@@ -13,10 +13,10 @@ endif
 
 kernel_build: droid
 ifeq ($(strip $(kernel_not_configured)),)
-	$(MAKE) -C kernel ARCH=arm beagleboneblack_defconfig
+	$(MAKE) -C kernel ARCH=arm am335x_evm_android_defconfig
 endif
-	$(MAKE) -C kernel ARCH=arm CROSS_COMPILE=$(CC_PREFIX) zImage dtbs LOADADDR=0x80008000 -j4
-	$(MAKE) -C kernel ARCH=arm CROSS_COMPILE=$(CC_PREFIX) modules -j4
+	$(MAKE) -C kernel ARCH=arm CROSS_COMPILE=$(CC_PREFIX) zImage dtbs -j9
+	$(MAKE) -C kernel ARCH=arm CROSS_COMPILE=$(CC_PREFIX) modules -j9
 
 kernel_clean:
 	$(MAKE) -C kernel ARCH=arm  distclean
@@ -40,8 +40,6 @@ fs_tarball: $(FS_GET_STATS)
 	mkdir $(ANDROID_FS_DIR)
 	cp -R $(ANDROID_INSTALL_DIR)/out/target/product/$(TARGET_PRODUCT)/root/* $(ANDROID_FS_DIR)
 	cp -R $(ANDROID_INSTALL_DIR)/out/target/product/$(TARGET_PRODUCT)/system/* $(ANDROID_FS_DIR)/system
-	# mkdir $(ANDROID_FS_DIR)/system/vendor
-	# ln -s lib/firmware $(ANDROID_FS_DIR)/system/vendor/firmware
 	$(MAKE) -C kernel ARCH=arm CROSS_COMPILE=$(CC_PREFIX) INSTALL_MOD_PATH=$(ANDROID_FS_DIR)/system modules_install
 	(cd $(ANDROID_INSTALL_DIR)/out/target/product/$(TARGET_PRODUCT); \
 	 ../../../../build/tools/mktarball.sh ../../../host/linux-x86/bin/fs_get_stats android_rootfs . rootfs rootfs.tar.bz2)
